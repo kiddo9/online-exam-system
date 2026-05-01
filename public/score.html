@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exam Result - ExamPro</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&display=swap");
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      :root {
+        --brand: #2563eb;
+        --brand-dark: #1d4ed8;
+        --brand-light: #eff6ff;
+        --surface: #fff;
+        --bg: #f0f4ff;
+        --text: #111827;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --radius: 16px;
+        --shadow: 0 10px 40px rgba(37, 99, 235, 0.08);
+        --ok: #22c55e;
+        --ok-bg: #f0fdf4;
+        --warn: #f59e0b;
+        --warn-bg: #fffbeb;
+        --err: #ef4444;
+      }
+      body {
+        font-family: "Sora", sans-serif;
+        background: var(--bg);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .page-bg {
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(135deg, #e0eaff 0%, #f0f4ff 55%, #e8f0fe 100%);
+        z-index: 0;
+      }
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--border);
+      }
+      .nav-inner {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0.9rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+      }
+      .logo-mark {
+        width: 36px;
+        height: 36px;
+        background: var(--brand);
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .brand-name {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--text);
+        letter-spacing: -0.02em;
+      }
+      main {
+        position: relative;
+        z-index: 1;
+        max-width: 850px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+        width: 100%;
+      }
+      .result-card {
+        background: var(--surface);
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        padding: 2.5rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        animation: fadeUp 0.5s ease;
+      }
+      .score-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin: 0 auto 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 8px solid var(--brand-light);
+        background: #fff;
+      }
+      .score-val {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--brand);
+      }
+      .score-label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .result-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 0.5rem;
+      }
+      .result-meta {
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+      }
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        border: none;
+      }
+      .btn-pri {
+        background: var(--brand);
+        color: #fff;
+      }
+      .btn-pri:hover { background: var(--brand-dark); transform: translateY(-1px); }
+
+      .review-section {
+        margin-top: 3rem;
+        text-align: left;
+      }
+      .review-header {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--text);
+      }
+      .question-box {
+        background: var(--surface);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+      }
+      .q-text {
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text);
+      }
+      .option-review {
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .opt-correct { background: var(--ok-bg); border: 1px solid #bbf7d0; color: #15803d; }
+      .opt-wrong { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
+      .opt-normal { background: #f9fafb; border: 1px solid var(--border); color: var(--muted); }
+      
+      .badge {
+        font-size: 0.7rem;
+        padding: 2px 8px;
+        border-radius: 99px;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .badge-your { background: var(--brand); color: #fff; }
+      .badge-correct { background: var(--ok); color: #fff; }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-bg"></div>
+    <nav>
+      <div class="nav-inner">
+        <a class="nav-brand" id="nav-home-link" href="#">
+          <div class="logo-mark">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </div>
+          <span class="brand-name">ExamPro</span>
+        </a>
+      </div>
+    </nav>
+
+    <main>
+      <div class="result-card" id="result-summary">
+        <div class="score-circle">
+          <div class="score-val" id="final-score">--%</div>
+          <div class="score-label">SCORE</div>
+        </div>
+        <h2 class="result-title" id="exam-title">Exam Completed</h2>
+        <div class="result-meta">
+          <span id="finish-time">Finished: --</span>
+          <span id="exam-duration">Duration: -- min</span>
+        </div>
+        <a href="#" id="back-btn" class="btn btn-pri">Back to Dashboard</a>
+
+        <div class="review-section">
+          <h3 class="review-header">Question Review</h3>
+          <div id="review-container">
+            <!-- Review items injected here -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        const user = checkAuth(); // Allow any authenticated user
+        if (!user) return;
+
+        // Set dynamic navigation links
+        const dashboardUrl = user.role === 'admin' ? 'admin-dashboard.html' : 'student-dashboard.html';
+        document.getElementById('nav-home-link').href = dashboardUrl;
+        document.getElementById('back-btn').href = dashboardUrl;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const submissionId = urlParams.get('id');
+
+        if (!submissionId) {
+          window.location.href = 'student-dashboard.html';
+          return;
+        }
+
+        if (submissionId === 'demo') {
+          renderResult({
+            submission: {
+              score: 100,
+              exam_title: 'Demo Technical Assessment',
+              duration: 30,
+              submitted_at: new Date().toISOString()
+            },
+            review: [
+              {
+                question_text: 'Which of the following is considered the core runtime environment for executing JavaScript outside the browser?',
+                selected_option_id: 1,
+                options: [
+                  { id: 1, option_text: 'Node.js', is_correct: true },
+                  { id: 2, option_text: 'React Native', is_correct: false },
+                  { id: 3, option_text: 'Laravel', is_correct: false },
+                  { id: 4, option_text: 'Apache', is_correct: false }
+                ]
+              }
+            ]
+          });
+          return;
+        }
+
+        try {
+          const data = await apiRequest(`/api/results/${submissionId}`);
+          renderResult(data);
+        } catch (error) {
+          console.error(error);
+          document.getElementById('result-summary').innerHTML = `
+            <div style="padding: 2rem;">
+              <h2 style="color: var(--err); margin-bottom: 1rem;">Failed to load results</h2>
+              <p style="color: var(--muted); margin-bottom: 2rem;">${error.message}</p>
+              <a href="student-dashboard.html" class="btn btn-pri">Back to Dashboard</a>
+            </div>
+          `;
+        }
+      });
+
+      function renderResult(data) {
+        const { submission, review } = data;
+        
+        document.getElementById('final-score').innerText = `${submission.score}%`;
+        document.getElementById('exam-title').innerText = submission.exam_title;
+        document.getElementById('exam-duration').innerText = `Duration: ${submission.duration} min`;
+        
+        const date = new Date(submission.submitted_at);
+        document.getElementById('finish-time').innerText = `Finished: ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}, ${date.toLocaleDateString()}`;
+
+        const container = document.getElementById('review-container');
+        container.innerHTML = review.map((q, idx) => {
+          return `
+            <div class="question-box">
+              <div class="q-text">${idx + 1}. ${q.question_text}</div>
+              <div class="options-review">
+                ${q.options.map(opt => {
+                  let cls = 'opt-normal';
+                  let badges = '';
+                  
+                  const isSelected = opt.id === q.selected_option_id;
+                  const isCorrect = opt.is_correct;
+
+                  if (isSelected && isCorrect) {
+                    cls = 'opt-correct';
+                    badges = '<span class="badge badge-correct">Correct & Your Answer</span>';
+                  } else if (isSelected && !isCorrect) {
+                    cls = 'opt-wrong';
+                    badges = '<span class="badge badge-your">Your Answer</span>';
+                  } else if (!isSelected && isCorrect) {
+                    cls = 'opt-correct';
+                    badges = '<span class="badge badge-correct">Correct Answer</span>';
+                  }
+
+                  return `
+                    <div class="option-review ${cls}">
+                      <span>${opt.option_text}</span>
+                      <div style="margin-left: auto">${badges}</div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    </script>
+  </body>
+</html>
